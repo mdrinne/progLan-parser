@@ -1,0 +1,102 @@
+program : includes main
+        | includes main funcDefs
+
+includes : include
+         | include includes
+
+include : HASHTAG INCLUDE QUOTE ID QUOTE
+        | HASHTAG INCLUDE LARROW ID RARROW
+
+funcDefs : funcDefinition
+         | funcDefinition funcDefs
+
+funcDefinition : FUNCTION ID OPAREN parameterList CPAREN block
+
+parameterList : var ID
+              | var ID COMMA parameterList
+              | EMPTY
+
+main : FUNCTION MAIN OPAREN parameterList CPAREN block
+
+varDef : VAR optInit MONEY
+
+optInit : ASSIGN expr
+        | funcCall
+        | EMPTY
+
+unary : ID
+      | INTEGER
+      | STRING
+
+item : unary
+
+list : item
+     | item COMMA list
+
+optList : list
+        | EMPTY
+
+oper : PLUS
+     | TIMES
+     | DIVIDE
+     | MINUS
+     | EQUALS
+     | GREATERTHAN
+     | GREATERTHANOREQUAL
+     | LESSTHAN
+     | LESSTHANOREQUAL
+     | NOT EQUALS
+
+expr : unary
+     | unary oper expression
+
+exprList : expr
+         | expr COMMA exprList
+
+argList : expr
+	| expr COMMA exprList
+
+optArgList : argList
+	   | EMPTY
+
+optExprList : exprList
+            | EMPTY
+
+funcCall : ID OPAREN optArgList CPAREN
+
+ifStatement : IF OPAREN expr CPAREN block optElse
+
+optElse : ELSE block
+        | ELSE IF ifStatement
+        | EMPTY
+
+whileLoop : WHILE OPAREN expr CPAREN block
+
+returnStatement : RETURN unary MONEY
+
+forLoop : FOR OPAREN INT ID EQUALS INTEGER SEMI ID check INTEGER SEMI ID selfOp CPAREN block
+
+check : GREATERTHAN
+      | GREATERTHANOREQUAL
+      | LESSTHAN
+      | LESSTHANOREQUAL
+
+selfOp : PLUS PLUS
+       | MINUS MINUS
+       | PLUS EQUALS INTEGER
+       | MINUS EQUALS INTEGER
+       | TIMES EQUALS INTEGER
+       | DIVIDE EQUALS INTEGER 
+
+block : OBRACE statements CBRACE
+
+statements : statement
+           | statement statements
+
+statement : expr MONEY
+          | ifStatement
+          | whileLoop
+          | forLoop
+          | returnStatement
+
+

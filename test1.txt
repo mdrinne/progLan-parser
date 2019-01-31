@@ -1,0 +1,61 @@
+? 
+  Matthew Rinne
+  test1.txt
+  cs403 Programming Languages
+?
+
+#include "example.h"
+#include <include.h>
+
+func main () {
+    ? variable definitions ?
+    var x = 57.3$
+    var string = 'hello'$
+    var empty$
+
+    ? lists ?
+    var arr = [1, 4, 82]$
+    var array = ['text', 'more text']$
+    var emptyArray = []$
+
+    ? some expressions ?
+    var y = x + 1$
+    var z = y * x$
+    var temp = string + 'world'$
+
+    ? functioncall (also uses optExprList) ?
+    var a = newFunc(x, string)$
+    var b = secondFunc()$
+
+    ? if block ?
+    if (x = 58) {
+        x = x - 1$
+    }
+    else if (x = 56) {
+        x = x + 1$
+    }
+    else {
+        x = 57$
+    }
+
+    ? while loop ?
+    while (x != 59) {
+        x = x + 1$
+    }
+
+    ? for loop ?
+    for (var i=0; i<5; i++) {
+        x * 5$
+    }
+
+    return$
+}
+
+func newFunc(int numb, str text) {
+    return numb$
+}
+
+func secondFunc() {
+    str xyz = 'hello, world!'$
+    return xyz$
+}

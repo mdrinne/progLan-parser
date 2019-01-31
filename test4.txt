@@ -1,0 +1,35 @@
+? 
+  Matthew Rinne
+  test4.txt
+  cs403 Programming Languages
+?
+
+#include <stdfunc.h>
+#include <array.h>
+
+func main ()
+{
+    ? more comments ?
+    var x = 5$
+
+    for (var i=1; i<10; i++)
+    {
+        x++$
+        x = x / i$
+        print(x)$
+    }
+
+    var str = 'cat'$
+    str[0] = 'p'$
+    print(str)$
+
+    var y = 20$
+
+    while (y != 0)
+    {
+        print(y)$
+        y--$
+    }
+
+    return$
+}
