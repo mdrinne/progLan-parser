@@ -50,7 +50,9 @@ oper : PLUS
      | NOT EQUALS
 
 expr : unary
-     | unary oper expression
+     | unary doubleSelfOp
+     | unary doubleSelfOp expr
+     | unary oper expr
 
 exprList : expr
          | expr COMMA exprList
@@ -83,12 +85,14 @@ check : GREATERTHAN
       | LESSTHAN
       | LESSTHANOREQUAL
 
-selfOp : PLUS PLUS
-       | MINUS MINUS
+selfOp : doubleSelfOp
        | PLUS EQUALS INTEGER
        | MINUS EQUALS INTEGER
        | TIMES EQUALS INTEGER
-       | DIVIDE EQUALS INTEGER 
+       | DIVIDE EQUALS INTEGER
+
+doubleSelfOp : PLUS PLUS
+             | MINUS MINUS
 
 block : OBRACE statements CBRACE
 
