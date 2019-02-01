@@ -94,6 +94,8 @@ statements : statement
            | statement statements
 
 statement : expr MONEY
+          | varDef
+          | funcDefinition
           | ifStatement
           | whileLoop
           | forLoop
