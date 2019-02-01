@@ -37,7 +37,7 @@ char *MOD;
 char *AT;
 char *NOT;
 char *DOT;
-char *HASHTAG;
+char *HASH;
 char *QUESTION;
 char *COLON;
 char *QUOTE;

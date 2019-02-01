@@ -21,14 +21,16 @@ main : FUNCTION MAIN OPAREN parameterList CPAREN block
 varDef : VAR optInit MONEY
 
 optInit : ASSIGN expr
-        | funcCall
+        | ASSIGN funcCall
         | EMPTY
 
 unary : ID
       | INTEGER
       | STRING
+      | MINUS unary
 
 item : unary
+     | funcCall
 
 list : item
      | item COMMA list

@@ -233,7 +233,7 @@ lex()
         case '@': return newLexeme(AT);
         case '!': return newLexeme(NOT);
         case '.': return newLexeme(DOT);
-        case '#': return newLexeme(HASHTAG);
+        case '#': return newLexeme(HASH);
         case '?': return newLexeme(QUESTION);
         case ':': return newLexeme(COLON);
         case '"': return newLexeme(QUOTE);
