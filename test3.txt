@@ -7,33 +7,6 @@
 #include <stdfunc.h>
 #include <array.h>
 
-func main ()
-{
-    var x = 10$
-    x = square(x)$
-
-    var y = 5$
-    y = square(square(y))$
-
-    var str = 'ha'$
-    str = doubleString(doubleString(str))$
-    print(str)$
-
-    if (x == 100 && y == 25)
-    {
-        print('WOW')$
-    }
-    else if (x == 100 && y == 125)
-    {
-        print('WOOH')$
-    }
-    else
-    {
-        print(str)$
-    }
-
-    return$
-}
 
 func square(var num)
 {
@@ -43,4 +16,33 @@ func square(var num)
 func doubleString(var str)
 {
     return string + string$
+}
+
+
+main ()
+{
+    var x = 10$
+    x = call square(x)$
+
+    var y = 5$
+    y = call square(call square(y))$
+
+    var str = 'ha'$
+    str = call doubleString(call doubleString(str))$
+    call print(str)$
+
+    if (x == 100 && y == 25)
+    {
+        call print('WOW')$
+    }
+    else if (x == 100 && y == 125)
+    {
+        call print('WOOH')$
+    }
+    else
+    {
+        call print(str)$
+    }
+
+    return$
 }

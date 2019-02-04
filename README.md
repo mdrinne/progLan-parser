@@ -20,26 +20,24 @@ Strings can be added together with '+'
 
 Will support arrays down the road, will have built in functions
 
-Print with 'print()'
+Print with 'call print()'
 
 ============================
 To run Lexer using makefile commands:
 
   make : compiles scanner executable
   
-  make test1 : runs scanner on test1.txt
-  make test2 : runs scanner on test2.txt
-  make test3 : runs scanner on test3.txt
-  make test4 : runs scanner on test4.txt
-  make test5 : runs scanner on test5.txt
+  make test1 : runs recognizer on test1.txt, illegal
+  make test2 : runs recognizer on test2.txt, illegal
+  make test3 : runs recognizer on test3.txt, legal
+  make test4 : runs recognizer on test4.txt, legal
+  make test5 : runs recognizer on test5.txt, illegal
   
-  make run : compiles scanner executable and executes all 5 test cases
+  # for the sake of allowing the make run command to run all the way through, I used exit code 0 when reading a Syntax Error. This will be changed to a non zero exit code after testing
+  make run : compiles recognizer executable and executes all 5 test cases
   
   make clean : gets rid of all .o files and scanner executable
   
   
 ============================
-Assignment:
-Tasked with creating our own programming language.
-Starting with the grammer, had to create grammar rules in Backus Naur Form.
-Next step was lexical analysis, in which we create lexemes to store token types so that we can check our grammar come parsing time.
+

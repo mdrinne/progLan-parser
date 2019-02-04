@@ -19,6 +19,8 @@ struct lexeme
     double  rval;
     char   *sval;
     char   *ID;
+    Lexeme *left;
+    Lexeme *right;
 } ;
 
 
@@ -66,11 +68,11 @@ newLexemeString(char *x)
 
 
 Lexeme *
-newLexemeVar(char *x)
+newLexemeID(char *x)
 {
     Lexeme *new = malloc(sizeof(Lexeme));
     assert(new != 0);
-    new->type = VARIABLE;
+    new->type = ID;
     new->ID   = x;
     return new;
 }
@@ -108,4 +110,34 @@ char *
 getLexemeID(Lexeme *n)
 {
     return n->ID;
+}
+
+
+Lexeme *
+car(Lexeme *l)
+{
+    return l->left;
+}
+
+
+Lexeme *
+cdr(Lexeme *l)
+{
+    return l->right;
+}
+
+
+void
+set_car(Lexeme *parent, Lexeme *child)
+{
+    parent->left = child;
+    return;
+}
+
+
+void
+set_cdr(Lexeme *parent, Lexeme *child)
+{
+    parent->right = child;
+    return;
 }

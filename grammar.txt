@@ -1,48 +1,47 @@
-program : includes main
-        | includes main funcDefs
+program : includes mainFunc
+        | includes defs mainFunc
+
+defs : def
+     | def defs
+
+def : varDef
+    | funcDef
 
 includes : include
          | include includes
 
-include : HASHTAG INCLUDE QUOTE ID QUOTE
-        | HASHTAG INCLUDE LARROW ID RARROW
+include : HASH INCLUDE QUOTE ID DOT ID QUOTE
+        | HASH INCLUDE LESSTHAN ID DOT ID GREATERTHAN
 
-funcDefs : funcDefinition
-         | funcDefinition funcDefs
+funcDef : FUNCTION ID OPAREN parameterList CPAREN block
 
-funcDefinition : FUNCTION ID OPAREN parameterList CPAREN block
+parameterList : VAR ID
+              | VAR ID COMMA parameterList
 
-parameterList : var ID
-              | var ID COMMA parameterList
-              | EMPTY
+optParamList : parameterList
+	     | EMPTY
 
-main : FUNCTION MAIN OPAREN parameterList CPAREN block
+mainFunc : MAIN OPAREN parameterList CPAREN block
 
-varDef : VAR optInit MONEY
+varDef : VAR ID optInit MONEY
 
 optInit : ASSIGN expr
-        | ASSIGN funcCall
         | EMPTY
 
 unary : ID
       | INTEGER
+      | REAL
       | STRING
       | MINUS unary
 
-item : unary
-     | funcCall
-
-list : item
-     | item COMMA list
-
-optList : list
-        | EMPTY
+optUnary : unary
+	 | EMPTY
 
 oper : PLUS
      | TIMES
-     | DIVIDE
+     | DIVIDES
      | MINUS
-     | EQUALS
+     | ASSIGN
      | GREATERTHAN
      | GREATERTHANOREQUAL
      | LESSTHAN
@@ -50,12 +49,9 @@ oper : PLUS
      | NOT EQUALS
 
 expr : unary
+     | funcCall
      | unary doubleSelfOp
-     | unary doubleSelfOp expr
      | unary oper expr
-
-exprList : expr
-         | expr COMMA exprList
 
 argList : expr
 	| expr COMMA exprList
@@ -63,36 +59,35 @@ argList : expr
 optArgList : argList
 	   | EMPTY
 
-optExprList : exprList
-            | EMPTY
-
-funcCall : ID OPAREN optArgList CPAREN
+funcCall : CALL ID OPAREN optArgList CPAREN
 
 ifStatement : IF OPAREN expr CPAREN block optElse
 
-optElse : ELSE block
-        | ELSE IF ifStatement
-        | EMPTY
+elseStatement : ELSE block
+              | ELSE ifStatement
+
+optElse : elseStatement
+	| EMPTY
 
 whileLoop : WHILE OPAREN expr CPAREN block
 
-returnStatement : RETURN unary MONEY
+returnStatement : RETURN optUnary MONEY
 
-forLoop : FOR OPAREN INT ID EQUALS INTEGER SEMI ID check INTEGER SEMI ID selfOp CPAREN block
+forLoop : FOR OPAREN VAR ID ASSIGN INTEGER SEMI ID checkOper INTEGER SEMI ID selfOp CPAREN block
 
-check : GREATERTHAN
-      | GREATERTHANOREQUAL
-      | LESSTHAN
-      | LESSTHANOREQUAL
+checkOper : GREATERTHAN
+          | GREATERTHANOREQUAL
+          | LESSTHAN
+          | LESSTHANOREQUAL
 
-selfOp : doubleSelfOp
-       | PLUS EQUALS INTEGER
-       | MINUS EQUALS INTEGER
-       | TIMES EQUALS INTEGER
-       | DIVIDE EQUALS INTEGER
+selfOp : PLUSEQUALS INTEGER
+       | MINUSEQUALS INTEGER
+       | TIMESEQUALS INTEGER
+       | DIVIDEEQUALS INTEGER
+       | doubleSelfOp
 
-doubleSelfOp : PLUS PLUS
-             | MINUS MINUS
+doubleSelfOp : PLUSPLUS
+             | MINUSMINUS
 
 block : OBRACE statements CBRACE
 
@@ -101,10 +96,9 @@ statements : statement
 
 statement : expr MONEY
           | varDef
-          | funcDefinition
+          | funcDef
           | ifStatement
           | whileLoop
           | forLoop
           | returnStatement
-
-
+	  | funcCall

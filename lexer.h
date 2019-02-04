@@ -20,3 +20,4 @@ Lexeme *lexVarOrKeyword();
 Lexeme *lexString();
 Lexeme *lex();
 void    getFile(FILE *f);
+int     getLine();

@@ -7,26 +7,32 @@
 #include <stdfunc.h>
 #include <array.h>
 
-func main () {
+func newFunc(var numb, var text) {
+    return numb$
+}
+
+
+func secondFunc(temp) {
+    var xyz = 'hello, world!'$
+    return xyz$
+}
+
+
+main () {
     ? variable definitions ?
     var x = 57.3$
     var string = 'hello'$
     var empty$
 
-    ? lists ?
-    var arr = [1, 4, 82]$
-    var array = ['text', 'more text']$
-    var emptyArray = []$
-
     ? some expressions ?
     var y = x + 1$
     var z = y * x$
-    var a = 17.456.82$
+    var a = 17.456$
     var temp = string + 'world'$
 
     ? functioncall (also uses optExprList) ?
-    var a = newFunc(x, string)$
-    var b = secondFunc()$
+    var a = call newFunc(x, string)$
+    var b = call secondFunc()$
 
     ? if block ?
     if (x = 58) {
@@ -50,13 +56,4 @@ func main () {
     }
 
     return$
-}
-
-func newFunc(int numb, str text) {
-    return numb$
-}
-
-func secondFunc() {
-    str xyz = 'hello, world!'$
-    return xyz$
 }

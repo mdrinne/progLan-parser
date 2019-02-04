@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
         if (getLexemeType(token) == INTEGER) printf("%s %d\n",getLexemeType(token),getLexemeIval(token));
         else if (getLexemeType(token) == REAL) printf("%s %lf\n",getLexemeType(token),getLexemeRval(token));
         else if (getLexemeType(token) == STRING) printf("%s %s\n",getLexemeType(token),getLexemeSval(token));
-        else if (getLexemeType(token) == VARIABLE) printf("%s %s\n",getLexemeType(token),getLexemeID(token));
+        else if (getLexemeType(token) == ID) printf("%s %s\n",getLexemeType(token),getLexemeID(token));
         else printf("%s\n", getLexemeType(token));
         token = lex();
     }

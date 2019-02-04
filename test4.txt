@@ -7,7 +7,7 @@
 #include <stdfunc.h>
 #include <array.h>
 
-func main ()
+main ()
 {
     ? more comments ?
     var x = 5$
@@ -16,18 +16,17 @@ func main ()
     {
         x++$
         x = x / i$
-        print(x)$
+        call print(x)$
     }
 
     var str = 'cat'$
-    str[0] = 'p'$
-    print(str)$
+    call print(str)$
 
     var y = 20$
 
     while (y != 0)
     {
-        print(y)$
+        call print(y)$
         y--$
     }
 

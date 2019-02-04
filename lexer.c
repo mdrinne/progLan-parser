@@ -178,8 +178,8 @@ lexVarOrKeyword()
     else if (strcmp(buffer, "return") == 0) return newLexeme(RETURN);
     else if (strcmp(buffer, "var") == 0) return newLexeme(VAR);
     else if (strcmp(buffer, "for") == 0) return newLexeme(FOR);
-    else if (strcmp(buffer, "print") == 0) return newLexeme(PRINT);
-    else return newLexemeVar(buffer);
+    else if (strcmp(buffer, "call") == 0) return newLexeme(CALL);
+    else return newLexemeID(buffer);
 }
 
 
@@ -225,13 +225,10 @@ lex()
         case '[': return newLexeme(OBRACKET);
         case ']': return newLexeme(CBRACKET);
         case ',': return newLexeme(COMMA);
-        case '*': return newLexeme(TIMES);
-        case '/': return newLexeme(DIVIDES);
         case ';': return newLexeme(SEMI);
         case '$': return newLexeme(MONEY);
         case '%': return newLexeme(MOD);
         case '@': return newLexeme(AT);
-        case '!': return newLexeme(NOT);
         case '.': return newLexeme(DOT);
         case '#': return newLexeme(HASH);
         case '?': return newLexeme(QUESTION);
@@ -283,6 +280,7 @@ lex()
             {
                 ch = readChar();
                 if (ch == '+') return newLexeme(PLUSPLUS);
+                else if (ch == '=') return newLexeme(PLUSEQUALS);
                 else
                 {
                     pushback(ch);
@@ -293,10 +291,31 @@ lex()
             {
                 ch = readChar();
                 if (ch == '-') return newLexeme(MINUSMINUS);
+                else if (ch == '=') return newLexeme(MINUSEQUALS);
                 else
                 {
                     pushback(ch);
                     return newLexeme(MINUS);
+                }
+            }
+            else if (ch == '*')
+            {
+                ch = readChar();
+                if (ch == '=') return newLexeme(TIMESEQUALS);
+                else
+                {
+                    pushback(ch);
+                    return newLexeme(TIMES);
+                }
+            }
+            else if (ch == '/')
+            {
+                ch = readChar();
+                if (ch == '=') return newLexeme(DIVIDES);
+                else
+                {
+                    pushback(ch);
+                    return newLexeme(DIVIDES);
                 }
             }
             else if (ch == '=')
@@ -307,6 +326,16 @@ lex()
                 {
                     pushback(ch);
                     return newLexeme(ASSIGN);
+                }
+            }
+            else if (ch == '!')
+            {
+                ch = readChar();
+                if (ch == '=') return newLexeme(NOTEQUALS);
+                else
+                {
+                    pushback(ch);
+                    return newLexeme(NOT);
                 }
             }
             else if (isdigit(ch))
@@ -334,4 +363,11 @@ void
 getFile(FILE *f)
 {
     fp = f;
+}
+
+
+int
+getLine()
+{
+    return line;
 }
