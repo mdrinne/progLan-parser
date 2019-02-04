@@ -29,7 +29,6 @@ advance()
 int
 check(char *type)
 {
-    // printf("current: %s,\tchecking: %s\n",getLexemeType(current), type);
     return getLexemeType(current) == type;
 }
 

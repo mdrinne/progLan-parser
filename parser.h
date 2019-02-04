@@ -32,7 +32,6 @@ int     varDefPending();
 void    optInit();
 void    unary();
 int     unaryPending();
-// void    optUnary();
 void    oper();
 int     operPending();
 void    expr();
