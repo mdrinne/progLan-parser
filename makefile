@@ -14,7 +14,7 @@ scanner :
 	gcc $(LOPTS) scanner.c lexer.o lexeme.o types.o -o scanner
 
 test1 :
-	recognizer test1.txt
+	recognizer test1.rin
 
 test2 :
 	recognizer test2.txt

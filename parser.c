@@ -61,20 +61,26 @@ cons(char *type, Lexeme *left, Lexeme *right)
 }
 
 
-void
+Lexeme *
 program()
 {
-    includes();
-    if (defsPending()) defs();
-    mainFunc();
+    Lexeme *i, *d, *m;
+    i = includes();
+    if (defsPending()) d = defs();
+    else d = NULL;
+    m = mainFunc();
+    return cons(PROGRAM,i,cons(GLUE,d,m));
 }
 
 
-void
+Lexeme *
 defs()
 {
-    def();
-    if (defsPending()) defs();
+    Lexeme *d, *ds;
+    d = def();
+    if (defsPending()) ds = defs();
+    else ds = NULL;
+    return cons(DEFS,d,ds);
 }
 
 
@@ -85,11 +91,13 @@ defsPending()
 }
 
 
-void
+Lexeme *
 def()
 {
-    if (varDefPending()) varDef();
-    else funcDef();
+    Lexeme *d;
+    if (varDefPending()) d = varDef();
+    else d = funcDef();
+    return cons(DEF,d,NULL);
 }
 
 
@@ -100,11 +108,14 @@ defPending()
 }
 
 
-void
+Lexeme *
 includes()
 {
-    include();
-    if (includesPending()) includes();
+    Lexeme *i, *is;
+    i = include();
+    if (includesPending()) is = includes();
+    else is = NULL;
+    return cons(INCLUDES,i,is);
 }
 
 
@@ -115,39 +126,32 @@ includesPending()
 }
 
 
-void
+Lexeme *
 include()
 {
+    Lexeme *fn, *fex;
     match(HASH);
     match(INCLUDE);
-    if (check(QUOTE))
-    {
-        match(QUOTE);
-        match(ID);
-        match(DOT);
-        match(ID);
-        match(QUOTE);
-    }
-    else
-    {
-        match(LESSTHAN);
-        match(ID);
-        match(DOT);
-        match(ID);
-        match(GREATERTHAN);
-    }
+    match(QUOTE);
+    fn = match(ID);
+    match(DOT);
+    fex = match(ID);
+    match(QUOTE);
+    return cons(INCLUDE,fn,fex);
 }
 
 
-void
+Lexeme *
 funcDef()
 {
+    Lexeme *fn, *op, *b;
     match(FUNCTION);
-    match(ID);
+    fn = match(ID);
     match(OPAREN);
-    optParamList();
+    op = optParamList();
     match(CPAREN);
-    block();
+    b = block();
+    return cons(FUNCDEF,fn,cons(GLUE,op,b));
 }
 
 
@@ -158,16 +162,19 @@ funcDefPending()
 }
 
 
-void
+Lexeme *
 parameterList()
 {
+    Lexeme *i, *p;
     match(VAR);
-    match(ID);
+    i = match(ID);
     if (check(COMMA))
     {
         match(COMMA);
-        parameterList();
+        p = parameterList();
     }
+    else p = NULL;
+    return cons(PARAMLIST,i,p);
 }
 
 
@@ -178,31 +185,38 @@ parameterListPending()
 }
 
 
-void
+Lexeme *
 optParamList()
 {
-    if (parameterListPending()) parameterList();
+    Lexeme *p;
+    if (parameterListPending()) p = parameterList();
+    else p = NULL;
+    return cons(OPTPARAMLIST,p,NULL);
 }
 
 
-void
+Lexeme *
 mainFunc()
 {
+    Lexeme *op, *b;
     match(MAIN);
     match(OPAREN);
-    optParamList();
+    op = optParamList();
     match(CPAREN);
-    block();
+    b = block();
+    return cons(MAINFUNC,op,b);
 }
 
 
-void
+Lexeme *
 varDef()
 {
+    Lexeme *vn, *oi;
     match(VAR);
-    match(ID);
-    optInit();
+    vn = match(ID);
+    oi = optInit();
     match(MONEY);
+    return cons(VARDEF,vn,oi);
 }
 
 
@@ -213,29 +227,32 @@ varDefPending()
 }
 
 
-void
+Lexeme *
 optInit()
 {
+    Lexeme *e;
     if (check(ASSIGN))
     {
         match(ASSIGN);
-        expr();
+        e = expr();
     }
+    cons(OPTINIT,e,NULL);
 }
 
 
-void
+Lexeme *
 unary()
 {
+    Lexeme *u;
     if (check(MINUS))
     {
-        match(MINUS);
-        unary();
+        u = uminus();
     }
-    else if (check(INTEGER)) match(INTEGER);
-    else if (check(REAL)) match(REAL);
-    else if (check(STRING)) match(STRING);
-    else match(ID);
+    else if (check(INTEGER)) u = match(INTEGER);
+    else if (check(REAL)) u = match(REAL);
+    else if (check(STRING)) u = match(STRING);
+    else u = match(ID);
+    return cons(UNARY,u,NULL);
 }
 
 
@@ -246,23 +263,35 @@ unaryPending()
 }
 
 
-void
+Lexeme *
+uminus()
+{
+    Lexeme *u;
+    match(MINUS);
+    u = unary();
+    return cons(UMINUS,u,NULL);
+}
+
+
+Lexeme *
 oper()
 {
-    if (check(PLUS)) match(PLUS);
-    else if (check(TIMES)) match(TIMES);
-    else if (check(DIVIDES)) match(DIVIDES);
-    else if (check(MINUS)) match(MINUS);
-    else if (check(ASSIGN)) match(ASSIGN);
-    else if (check(GREATERTHAN)) match(GREATERTHAN);
-    else if (check(GREATERTHANOREQUAL)) match(GREATERTHANOREQUAL);
-    else if (check(LESSTHAN)) match(LESSTHAN);
-    else if (check(LESSTHANOREQUAL)) match(LESSTHANOREQUAL);
-    else if (check(MOD)) match(MOD);
-    else if (check(ANDAND)) match(ANDAND);
-    else if (check(OROR)) match(OROR);
-    else if (check(EQUALEQUAL)) match(EQUALEQUAL);
-    else match(NOTEQUALS);
+    Lexeme *o;
+    if (check(PLUS)) o = match(PLUS);
+    else if (check(TIMES)) o = match(TIMES);
+    else if (check(DIVIDES)) o = match(DIVIDES);
+    else if (check(MINUS)) o = match(MINUS);
+    else if (check(ASSIGN)) o = match(ASSIGN);
+    else if (check(GREATERTHAN)) o = match(GREATERTHAN);
+    else if (check(GREATERTHANOREQUAL)) o = match(GREATERTHANOREQUAL);
+    else if (check(LESSTHAN)) o = match(LESSTHAN);
+    else if (check(LESSTHANOREQUAL)) o = match(LESSTHANOREQUAL);
+    else if (check(MOD)) o = match(MOD);
+    else if (check(ANDAND)) o = match(ANDAND);
+    else if (check(OROR)) o = match(OROR);
+    else if (check(EQUALEQUAL)) o = match(EQUALEQUAL);
+    else o = match(NOTEQUALS);
+    return cons(OPER,o,NULL);
 }
 
 
@@ -276,20 +305,44 @@ operPending()
 }
 
 
-void
+Lexeme *
 expr()
 {
+    Lexeme *uf, *op, *ex;
     if (unaryPending())
     {
-        unary();
-        if (doubleSelfOpPending()) doubleSelfOp();
+        uf = unary();
+        if (doubleSelfOpPending())
+        {
+            op = doubleSelfOp();
+            ex = NULL;
+        }
         else if (operPending())
         {
-            oper();
-            expr();
+            op = oper();
+            ex = expr();
+        }
+        else
+        {
+            op = NULL;
+            ex = NULL;
         }
     }
-    else funcCall();
+    else
+    {
+        uf = funcCall();
+        if (operPending())
+        {
+            op = oper();
+            ex = expr();
+        }
+        else
+        {
+            op = NULL;
+            ex = NULL;
+        }
+    }
+    return cons(EXPR,uf,cons(GLUE,op,ex));
 }
 
 
@@ -300,21 +353,28 @@ exprPending()
 }
 
 
-void optExpr()
+Lexeme *
+optExpr()
 {
-    if (exprPending()) expr();
+    Lexeme *ex;
+    if (exprPending()) ex = expr();
+    else ex = NULL;
+    return cons(OPTEXPR,ex,NULL);
 }
 
 
-void 
+Lexeme * 
 argList()
 {
-    expr();
+    Lexeme *ex, *arg;
+    ex = expr();
     if (check(COMMA))
     {
         match(COMMA);
-        expr();
+        arg = argList();
     }
+    else arg = NULL;
+    return cons(ARGLIST,ex,arg);
 }
 
 
@@ -325,21 +385,26 @@ argListPending()
 }
 
 
-void
+Lexeme *
 optArgList()
 {
-    if (argListPending()) argList();
+    Lexeme *arg;
+    if (argListPending()) arg = argList();
+    else arg = NULL;
+    return cons(OPTARGLIST,arg,NULL);
 }
 
 
-void
+Lexeme *
 funcCall()
 {
+    Lexeme *fn, *oarg;
     match(CALL);
-    match(ID);
+    fn = match(ID);
     match(OPAREN);
-    optArgList();
+    oarg = optArgList();
     match(CPAREN);
+    return cons(FUNCCALL,fn,oarg);
 }
 
 
@@ -350,15 +415,17 @@ funcCallPending()
 }
 
 
-void
+Lexeme *
 ifStatement()
 {
+    Lexeme *ex, *b, *oe;
     match(IF);
     match(OPAREN);
-    expr();
+    ex = expr();
     match(CPAREN);
-    block();
-    optElse();
+    b = block();
+    oe = optElse();
+    return cons(IFSTATEMENT,ex,cons(GLUE,b,oe));
 }
 
 
@@ -369,12 +436,14 @@ ifStatementPending()
 }
 
 
-void
+Lexeme *
 elseStatement()
 {
+    Lexeme *bif;
     match(ELSE);
-    if (ifStatementPending()) ifStatement();
-    else block();
+    if (ifStatementPending()) bif = ifStatement();
+    else bif = block();
+    return cons(ELSESTATEMENT,bif,NULL);
 }
 
 
@@ -385,21 +454,26 @@ elseStatementPending()
 }
 
 
-void
+Lexeme *
 optElse()
 {
-    if (elseStatementPending()) elseStatement();
+    Lexeme *e;
+    if (elseStatementPending()) e = elseStatement();
+    else e = NULL;
+    return cons(OPTELSE,e,NULL);
 }
 
 
-void
+Lexeme *
 whileLoop()
 {
+    Lexeme *ex, *b;
     match(WHILE);
     match(OPAREN);
-    expr();
+    ex = expr();
     match(CPAREN);
-    block();
+    b = block();
+    return cons(WHILELOOP,ex,b);
 }
 
 
@@ -410,12 +484,14 @@ whileLoopPending()
 }
 
 
-void
+Lexeme *
 returnStatement()
 {
+    Lexeme *oe;
     match(RETURN);
-    optExpr();
+    oe = optExpr();
     match(MONEY);
+    return cons(RETURNSTATEMENT,oe,NULL);
 }
 
 
@@ -426,36 +502,26 @@ returnStatementPending()
 }
 
 
-void
+Lexeme *
 forLoop()
 {
+    Lexeme *i1, *int1, *i2, *co, *int2, *i3, *so, *b;
     match(FOR);
     match(OPAREN);
     match(VAR);
-    match(ID);
+    i1 = match(ID);
     match(ASSIGN);
-    match(INTEGER);
+    int1 = match(INTEGER);
     match(SEMI);
-    match(ID);
-    checkOper();
-    if (check(INTEGER))
-    {
-        match(INTEGER);
-        match(SEMI);
-        match(ID);
-        selfOp();
-        match(CPAREN);
-        block();
-    }
-    else
-    {
-        match(ID);
-        match(SEMI);
-        match(ID);
-        selfOp();
-        match(CPAREN);
-        block();
-    }
+    i2 = match(ID);
+    co = checkOper();
+    int2 = match(INTEGER);
+    match(SEMI);
+    i3 = match(ID);
+    so = selfOp();
+    match(CPAREN);
+    b = block();
+    return cons(FORLOOP,i1,cons(GLUE,int1,cons(GLUE,i2,cons(GLUE,co,cons(GLUE,int2,cons(GLUE,i3,cons(GLUE,so,b)))))));
 }
 
 
@@ -466,40 +532,48 @@ forLoopPending()
 }
 
 
-void
+Lexeme *
 checkOper()
 {
-    if (check(GREATERTHAN)) match(GREATERTHAN);
-    else if (check(GREATERTHAN)) match(GREATERTHANOREQUAL);
-    else if (check(LESSTHAN)) match(LESSTHAN);
-    else match(LESSTHANOREQUAL);
+    Lexeme *co;
+    if (check(GREATERTHAN)) co = match(GREATERTHAN);
+    else if (check(GREATERTHAN)) co = match(GREATERTHANOREQUAL);
+    else if (check(LESSTHAN)) co = match(LESSTHAN);
+    else co = match(LESSTHANOREQUAL);
+    return cons(CHECKOPER,co,NULL);
 }
 
 
-void
+Lexeme *
 selfOp()
 {
+    Lexeme *op, *i;
     if (check(PLUSEQUALS))
     {
-        match(PLUSEQUALS);
-        match(INTEGER);
+        op = match(PLUSEQUALS);
+        i = match(INTEGER);
     }
     else if (check(MINUSEQUALS))
     {
-        match(MINUSEQUALS);
-        match(INTEGER);
+        op = match(MINUSEQUALS);
+        i = match(INTEGER);
     }
     else if (check(TIMESEQUALS))
     {
-        match(TIMESEQUALS);
-        match(INTEGER);
+        op = match(TIMESEQUALS);
+        i = match(INTEGER);
     }
     else if (check(DIVIDESEQUALS))
     {
-        match(DIVIDESEQUALS);
-        match(INTEGER);
+        op = match(DIVIDESEQUALS);
+        i = match(INTEGER);
     }
-    else doubleSelfOp();
+    else
+    {
+        op = doubleSelfOp();
+        i = NULL;
+    }
+    return cons(SELFOP,op,i);
 }
 
 
